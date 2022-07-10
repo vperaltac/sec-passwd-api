@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sec-passwd-api
+  namespace: dev
+  labels:
+    app: sec-passwd-api
+spec:
+  selector:
+    matchLabels:
+      app: sec-passwd-api
+      tier: frontend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: sec-passwd-api
+        tier: frontend
+    spec:
+      containers:
+      - name: sec-passwd-api
+        image: vperaltac/sec-passwd-api:0.1.0
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sec-passwd-api
+  namespace: dev
+  labels:
+    app: sec-passwd-api
+    tier: frontend
+spec:
+  type: NodePort
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    app: sec-passwd-api
+    tier: frontend
+
